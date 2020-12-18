@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <unordered_map>
+#include <sstream>
 
 using namespace std;
 
@@ -41,48 +42,77 @@ UserLogin::UserLogin()
 void UserLogin::readIn(const string& filename)
 {
 
-    // TO DO
+  ifstream in;
+  in.open(filename);
 
+  string str;
+  while(getline(in, str))
+  {
+    stringstream input(str);
+
+    string userName, password;
+    input >> userName >> password;
+
+    table[userName] = password;
+  }
 }
 
 size_t UserLogin::numberOfUsers()
 {
-
-    // TO DO
-
+  return table.size();
 }
 
 string UserLogin::passWordCheck(const string& userName)
 {
 
-    // TO DO
-
+  if (table.find(userName) != table.end())
+  {
+    return table[userName];
+  }
+  else
+  {
+    return "Non-existent User";
+  }
 }
 
 size_t UserLogin::wordBucketIdMethod1(const string& userName)
 {
 
-    // TO DO
+  return table.bucket(userName);
 
 }
 
 size_t UserLogin::wordBucketIdMethod2(const string& userName)
 {
+  int count = table.bucket_count();
 
-    // TO DO
-
+  for (int i = 0; i < count; i++)
+  {
+    for(auto it = table.begin(i); it != table.end(i); ++it)
+    {
+      if (it->first == userName)
+      {
+        return i;
+      }
+    }
+  }
 }
 
 bool UserLogin::validateUser(const string& userName)
 {
-
-    // TO DO
-
+  return table.find(userName) != table.end();
 }
 
 bool UserLogin::authenticateUser(const string& userName, const string& passWord)
-{ 
+{
+  bool realUser = table.find(userName) != table.end();
 
-    // TO DO
-
- }
+  if(realUser)
+  {
+    return table.find(userName)->second == passWord;
+  }
+  else
+  {
+    return false;
+  }
+}
